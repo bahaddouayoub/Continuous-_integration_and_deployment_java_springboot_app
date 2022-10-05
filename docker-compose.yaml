@@ -1,0 +1,34 @@
+version: "3.3"
+services:
+  databases:
+      image: mongo:latest
+      healthcheck:
+          test: curl --fail http://3.122.104.117:8888|| echo "Error from database-service"
+          interval: 60s
+          retries: 50
+          start_period: 20s
+          timeout: 10s
+      networks:
+          - net
+
+
+  my-app:
+    container_name: my-app-name
+    image: bahaddou88/my_ci_repo:v1.0.3
+    ports:
+      - 8888:8888
+    healthcheck:
+      test: curl --fail http://3.122.104.117:8888 || echo "Error from my simple app"
+      interval: 60s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
+    depends_on:
+      databases:
+        condition: service_started
+    networks:
+      - net
+
+
+networks:
+  net:
